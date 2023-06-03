@@ -38,6 +38,33 @@ const User = client.db('aircncDB').collection('users');
 const Room = client.db('aircncDB').collection('rooms');
 const Booking = client.db('aircncDB').collection('bookings');
 
-app.get('/', (req, res) => {
-  res.send('AirCNC Server is running..');
+//* ============ API REQUEST ============
+//* GET
+
+//* POST
+
+//* PUT / PATCH
+// Save user email and role in DB
+app.put('/users/:email', async (req, res) => {
+  try {
+    const { email } = req.params;
+    const user = req.body;
+    const filter = { email: email };
+    const options = { upsert: true };
+    const updateDoc = {
+      $set: user,
+    };
+    const result = await User.updateOne(filter, updateDoc, options);
+
+    if (result.modifiedCount) {
+      res.send({
+        success: true,
+        message: `Save user's email and role successfully`,
+      });
+    }
+  } catch (error) {
+    console.log(error.name.bgRed, error.message.bold, error.stack);
+  }
 });
+
+//* DELETE
