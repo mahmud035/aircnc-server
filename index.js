@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 require('colors');
 require('dotenv').config();
 
@@ -45,9 +45,44 @@ const Booking = client.db('aircncDB').collection('bookings');
 
 //* ============ API REQUEST ============
 //* GET
+// Get all room
+app.get('/rooms', async (req, res) => {
+  try {
+    const rooms = await Room.find({}).toArray();
+
+    if (rooms.length > 0) {
+      res.send({
+        success: true,
+        message: `Room's data found`,
+        data: rooms,
+      });
+    }
+  } catch (error) {
+    console.log(error.name.bgRed, error.message.bold, error.stack);
+  }
+});
+
+// Get single room
+app.get('/rooms/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = { _id: new ObjectId(id) };
+    const result = await Room.findOne(query);
+
+    if (result) {
+      res.send({
+        success: true,
+        message: 'Room data found',
+        data: result,
+      });
+    }
+  } catch (error) {
+    console.log(error.name.bgRed, error.message.bold, error.stack);
+  }
+});
 
 //* POST
-// Save a roomData in DB
+// Add a room in DB
 app.post('/rooms', async (req, res) => {
   try {
     const room = req.body;
